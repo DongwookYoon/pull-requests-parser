@@ -12,18 +12,22 @@ def get_token():
         pass
     return token
 
-def get_PR_header():
+def get_PR_params(page = 1):
     """
     create header for requests retrieving PRs
     settings can be tweaked for different options
     """
-    header = {
+    return {
         'state': 'all',
         'sort': 'popularity',
         'direction': 'desc',
-        'per_page': 5
+        'per_page': '100',
+        'page' : str(page)
     }
+
+def token_header():
     token = get_token()
     if token:
-        header['Autorization'] = 'token %s' % get_token()
-    return header
+        return {'Authorization': 'token %s' % token}
+    else:
+        return {}

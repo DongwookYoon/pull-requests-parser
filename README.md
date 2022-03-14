@@ -35,3 +35,18 @@ Program will output `out/<user> <repo-name>.json` from the specified repo names,
 
 ```
 See `model.py` for implementaion details.
+
+-------------
+## 3/14
+
+### update
+- the program currently retrieves and analyzes a maximum of 500 most commented PRs from the repo specified for time efficiency. This number is arbitrarily chosen, and can be easily tweaked to retrieve all PRs from a repo.
+- adding functionality to filter likely pr discussions- this is done by selecting the PRs whose commits contain at least one of the following file types: html, css, js
+- bot comments are filtered out
+- timestamps are also retrieved for each comment
+
+The accuracy of these changes are not verified in details, but the current output with several test repos appears very reasonable.
+
+### to be completed
+- we discussed the potential to use the parser for repo selection. What would be a good metric for this and how should I present it?
+

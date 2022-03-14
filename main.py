@@ -13,14 +13,14 @@ def main():
     print("enter path to excel file or <user>/<repo>: ")
     answer = str(input())
     if answer.endswith(".xlsx"):
-        print("-- excel file detected")
+        print("excel file detected")
         print("enter sheet name: ")
         sheet = str(input())
         for url in get_repo_names_from_excel(answer, sheet):
             parse_repo(url)
 
     else:
-        print("-- single repo detected")
+        print("single repo detected")
         parse_repo(answer)
 
 if __name__ == "__main__":
