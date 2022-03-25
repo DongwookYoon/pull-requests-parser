@@ -1,5 +1,7 @@
-from excel_reader import get_repo_names_from_excel
-from repo_parser import parse_repo
+from excel_reader import get_repos_from_excel
+from repo_parser import fetch_pr_info_in_repo
+from model import *
+import argparse
 
 def main():
     """
@@ -9,19 +11,22 @@ def main():
 
     output: a json representation of parsed data
     """
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("dest", help = "path to excel file or <user>/<repo>: ")
+    argparser.add_argument("--sheetname", type=str, help = "sheetname if inputting excel sheets")
+    args = argparser.parse_args()
+    answer = args.dest
 
-    print("enter path to excel file or <user>/<repo>: ")
-    answer = str(input())
     if answer.endswith(".xlsx"):
         print("excel file detected")
-        print("enter sheet name: ")
-        sheet = str(input())
-        for url in get_repo_names_from_excel(answer, sheet):
-            parse_repo(url)
+        if (args.sheetname == None):
+            print("sheetname option is required")
+        for repo in get_repos_from_excel(answer, args.sheetname):
+            fetch_pr_info_in_repo(repo)
 
     else:
         print("single repo detected")
-        parse_repo(answer)
+        fetch_pr_info_in_repo(Repo(answer))
 
 if __name__ == "__main__":
     main()

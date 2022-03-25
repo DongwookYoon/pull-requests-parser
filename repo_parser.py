@@ -6,28 +6,31 @@ import jsonpickle
 import os
 import json
 
-def parse_repo(name, output_dir = "out"):
+def fetch_pr_info_in_repo(repo):
     """
-    input: name of repo in the format: <user>/<repo-name>
+    input: repo object with name in the format: <user>/<repo-name>
 
     output: object containing parsed repo information (top PRs)
         also output as a json file at <output_dir>/<user> <repo-name>.json
     """
     print("- parsing repo")
     # get all PRs to create repo object
-    url = "https://api.github.com/repos/" + name + "/pulls"
+    url = "https://api.github.com/repos/" + repo.name + "/pulls"
     prs = get_top_prs(url)
-    repo = Repo(prs)
+    repo.prs = prs
 
     # save object to file
+    save_repo(repo)
+    return repo
+
+def save_repo(repo, output_dir = "out"):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    filename = output_dir + "/" + name.replace("/", " ") + ".json"
+    filename = output_dir + "/" + repo.name.replace("/", " ") + ".json"
     with open(filename, 'w') as outfile:
         outfile.write(jsonpickle.encode(repo))
         print("repo output as " + filename)
-    return repo
 
 def get_top_prs(url):
     """
@@ -82,7 +85,7 @@ def filter_likely_ui_discussions(prs_json):
         for commit in commits:
             # retrieve changed files for each commit, stop & return true when a target file type is found
             commit_details = requests.get(commit["url"], headers = token_header()).json()
-
+            print(commit_details)
             filenames = [file["filename"] for file in commit_details["files"]] 
             filtered_filenames = list(filter(is_target_file_type, filenames))
             if len(filtered_filenames) > 0:
