@@ -7,13 +7,11 @@
 ## Running the application
 (Optional) From root directory, create a `.token` file with personal Github access token as content. We won't be able to process a large amount of repo/PRs without a token.
 
-From root directory, use command: `python main.py`
-
-## Description
-When prompted, enter either
+From root directory, use command: `python main.py` and enter either
 1. path of excel file as first argument and option "--sheetname" for the name of sheet one wishes to read
-1. string of the format _user/repo-name_
+1. string of the format _user/repo-name_ (note: when using this approach, all attributes of thre repo below except for prs will be populated by default values)
 
+## Program Behaviour
 Program will output `out/<user> <repo-name>.json` from the specified repo names, with objects of the following format:
 
 ```perl
@@ -45,10 +43,11 @@ Program will output `out/<user> <repo-name>.json` from the specified repo names,
 ```
 See `model.py` for implementaion details.
 
--------------
-## 3/14
+## Customization
+`request_settings.py` could be changed for different behaviour in retrieving PRs from a repository.
 
-## update
+-------------
+## 3/14 update
 - the program currently retrieves and analyzes a maximum of 500 most commented PRs from the repo specified for time efficiency. This number is arbitrarily chosen, and can be easily tweaked to retrieve all PRs from a repo.
 - adding functionality to filter likely pr discussions- this is done by selecting the PRs whose commits contain at least one of the following file types: html, css, js
 - bot comments are filtered out
@@ -57,16 +56,20 @@ See `model.py` for implementaion details.
 
 The accuracy of these changes are not verified in details, but the current output with several test repos appears very reasonable.
 
-## to be completed
+### to be completed
 - we discussed the potential to use the parser for repo selection. What would be a good metric for this and how should I present it?
 
-## 3/24
+## 3/24 update
 - switched from user input to `argparse`, in which all options are specified in the run configuration
 - reading from an excel file is now tested
 - if reading from an excel file, more information about the repo such as the number of commits, number of forks, and creation time are recorded. The Repo class model is changed accordingly.
 - added documentation and attribute definition in `models.py`
 - minor code refactoring and bug fixes
 
-## to be completed
+### to be completed
 - refactoring methods in `repo_parser.py` into appropriate classes in `models.py`
+
+## 3/27 update
+- refactored many methods of `repo_parser.py` into class static methods for better organization 
+- created new `api_requests.py` fpr abstracting all API calls
 

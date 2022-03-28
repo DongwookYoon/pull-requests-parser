@@ -26,8 +26,16 @@ def get_PR_params(page = 1):
     }
 
 def token_header():
+    """
+    return a general header for any githb api request
+    """
     token = get_token()
     if token:
         return {'Authorization': 'token %s' % token}
     else:
         return {}
+
+"""
+the maximum page of PRs one wishes to get
+"""
+DEFAULT_MAX_PAGE = float('inf')
