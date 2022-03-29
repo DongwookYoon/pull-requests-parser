@@ -73,3 +73,32 @@ The accuracy of these changes are not verified in details, but the current outpu
 - refactored many methods of `repo_parser.py` into class static methods for better organization 
 - created new `api_requests.py` fpr abstracting all API calls
 
+## 3/28 update
+### to be completed (from Cleidson's feedbacks)
+repo:
+- add project URL information
+- add information of total number of PRs extracted
+- sort PRs by their timestamp
+
+pr:
+- total number of comments extracted
+- total number of different people involved in the comment
+
+comment:
+- information of author on comment (name)
+- total number of @ mentions
+- separate the different types of links
+- information about the total number of external links
+- identify where a reply within a reply comes from (might be difficult)
+- examples of source code not detected
+- eliminate link from reply as opposed to original comment
+- multiple quoted replies are integrated into one comment
+- not extracting the associated information when someone does a “review" (might be difficult)
+
+links
+- suggest "image/media" by file name (should already do that, not sure why it didn't work?)
+- if user is mentioned more than once, only show once
+
+
+
+
