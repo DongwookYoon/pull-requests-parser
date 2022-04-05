@@ -22,6 +22,7 @@ def main():
         if (args.sheetname == None):
             print("sheetname option is required")
         for repo in get_repos_from_excel(answer, args.sheetname):
+            print(repo)
             fetch_pr_info_in_repo(repo)
 
     else:

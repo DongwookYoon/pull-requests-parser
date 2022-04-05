@@ -19,7 +19,7 @@ def get_PR_params(page = 1):
     """
     return {
         'state': 'all',
-        'sort': 'popularity',
+        'sort': 'updated', # not sure if we're talking about creation date or last updated date
         'direction': 'desc',
         'per_page': '100',
         'page' : str(page)

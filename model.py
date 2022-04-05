@@ -20,7 +20,6 @@ class Link:
 
         output: object containing parsed Link information (URL, link type)
         """
-
         type_ = "unknown"
         if link_block.find("img"):
             type_ = "media"
@@ -29,6 +28,11 @@ class Link:
                 type_ = "user"
             elif "issue-link" in link_block.get("class"):
                 type_ = "issue"
+        else:
+            if link_block["href"].startswith("https://github.com"):
+                type_ = "other-internal"
+            else:
+                type_ = "other-external"
         return Link(link_block["href"], type_)
 
 class Comment:
@@ -41,28 +45,43 @@ class Comment:
         replies     plain text of quotes within a user's comments
         links       list of links embedded in comment
     """
-    def __init__(self, timestamp = 0, content = "", replies = "", links = []):
+    def __init__(self, timestamp = 0, content = "", replies = "", user_links = [], issue_links = [],
+    media_links = [], code_blocks = [], other_internal_links = [], other_external_links = []):
         self.timestamp = timestamp
         self.content = content
         self.replies = replies
-        self.links = links
+        self.user_links = user_links
+        self.num_user_links = len(user_links)
+        self.issue_links = issue_links
+        self.num_issue_links = len(issue_links)
+        self.media_links = media_links
+        self.num_media_links = len(media_links)
+        self.code_blocks = code_blocks
+        self.num_code_blocks = len(code_blocks)
+        self.other_internal_links = other_internal_links
+        self.num_other_internal_links = len(other_internal_links)
+        self.other_external_links = len(other_external_links)
+        self.num_other_external_links = len(other_external_links)
 
-    def get_comment_content_and_replies(comment_block):
+    def get_comment_details(comment_block):
         """
         input: DOM element with class "comment-body"
 
         output: string tuple representing plain comment content and quoted replies, respectively
         """
 
-        replies = ""
+        replies = []
         content = ""
+        code_blocks = []
         # iterate through entire comment to check for blockquotes (replies)
         for child in comment_block.findChildren(recursive=False):
             if (child.name == "blockquote"):
-                replies += child.text + "\n"
+                replies.append(child.text)
+            elif (child.name == "code"):
+                code_blocks.append(child.text)
             else:
                 content += child.text + "\n"
-        return (content, replies)
+        return (content, replies, code_blocks)
         
     def parse(comment_container):
         """
@@ -77,14 +96,31 @@ class Comment:
 
         comment_block = comment_container.find(class_ = "comment-body")
         # find replies & content
-        content, replies = Comment.get_comment_content_and_replies(comment_block)
+        content, replies, code_blocks = Comment.get_comment_details(comment_block)
 
         # find links embedded in comment
         link_blocks = comment_block.find_all("a")
-        links = [Link.parse(link) for link in link_blocks]
+
+        user_links = []
+        issue_links = []
+        media_links = []
+        other_internal_links = []
+        other_external_links = []
+        
+        links = {
+            "user": user_links,
+            "issue": issue_links,
+            "media": media_links,
+            "other-internal": other_internal_links,
+            "other-external": other_external_links
+        }
+        
+        [links[link_obj.type_].append(link_obj) for link_obj in [Link.parse(link) for link in link_blocks]]
 
         # return a comment object
-        return Comment(time, content, replies, links)
+        return Comment(timestamp = time, content = content, replies = replies,
+            user_links = user_links, issue_links = issue_links, media_links = media_links,
+            code_blocks = code_blocks, other_internal_links= other_external_links, other_external_links= other_external_links)
 
 class PR:
     """
@@ -98,6 +134,7 @@ class PR:
     def __init__(self, url, comments = [], status = "unknown"):
         self.url = url
         self.comments = comments
+        self.num_comments = len(comments)
         self.status = status
 
     # same as parse pr
@@ -110,7 +147,6 @@ class PR:
         print("-- parsing pr")
         # retrive html content of a page of PR
         html = pr_json["_links"]["html"]["href"]
-            
         soup = BeautifulSoup(get_html(html), "html.parser")
 
         # find status of PR
@@ -176,7 +212,8 @@ class Repo:
     def __init__(self, name, prs = [], num_commits = 0, num_releases = 0, num_contributors = 0, 
     num_watchers = 0, num_stargazers = 0, num_forks = 0, created_at = None, updated_at = None):
         self.name = name
-        self.prs = prs
+        self.url = "https://api.github.com/repos/" + name + "/pulls"
+        self.setPRs(prs)
         self.num_commits = num_commits
         self.num_releases = num_releases
         self.num_contributors = num_contributors
@@ -194,4 +231,8 @@ class Repo:
         with open(output_dir + "/" + filename, 'w') as outfile:
             outfile.write(jsonpickle.encode(self))
             print("repo output as " + filename)
+    
+    def setPRs(self, prs):
+        self.prs = prs
+        self.num_prs = len(prs)
         

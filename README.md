@@ -76,13 +76,13 @@ The accuracy of these changes are not verified in details, but the current outpu
 ## 3/28 update
 ### to be completed (from Cleidson's feedbacks)
 repo:
-- add project URL information
-- add information of total number of PRs extracted
-- sort PRs by their timestamp
+- ~~add project URL information~~
+- ~~add information of total number of PRs extracted~~
+- ~~sort PRs by their timestamp~~
 
 pr:
-- total number of comments extracted
-- total number of different people involved in the comment
+- ~~total number of comments extracted~~
+- total number of different people involved in the PR
 
 comment:
 - information of author on comment (name)

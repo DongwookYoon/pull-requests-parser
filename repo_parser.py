@@ -10,9 +10,8 @@ def fetch_pr_info_in_repo(repo):
     """
     print("- parsing repo")
     # get all PRs to create repo object
-    url = "https://api.github.com/repos/" + repo.name + "/pulls"
-    prs = get_top_prs(url)
-    repo.prs = prs
+    prs = get_top_prs(repo.url)
+    repo.setPRs(prs)
 
     # save object to file
     repo.save(filename = repo.name.replace("/", " ") + ".json", output_dir = "out")
