@@ -74,6 +74,21 @@ class Comment:
         replies = []
         content = ""
         code_blocks = []
+
+        user_links = []
+        issue_links = []
+        media_links = []
+        other_internal_links = []
+        other_external_links = []
+        
+        links = {
+            "user": user_links,
+            "issue": issue_links,
+            "media": media_links,
+            "other-internal": other_internal_links,
+            "other-external": other_external_links,
+            "unknown": []
+        }
         # iterate through entire comment to check for blockquotes (replies)
         for child in comment_block.findChildren(recursive=False):
             if (child.name == "blockquote"):
@@ -82,7 +97,9 @@ class Comment:
                 code_blocks.append(child.text)
             else:
                 content += child.text + "\n"
-        return (content, replies, code_blocks)
+                link_blocks = child.find_all("a")
+                [links[link_obj.type_].append(link_obj) for link_obj in [Link.parse(link) for link in link_blocks]]
+        return (content, replies, code_blocks, links)
         
     def parse(comment_container):
         """
@@ -99,32 +116,12 @@ class Comment:
         comment_block = comment_container.find(class_ = "comment-body")
         author = comment_container.find(class_ = "author").text
         # find replies & content
-        content, replies, code_blocks = Comment.get_comment_details(comment_block)
-
-        # find links embedded in comment
-        link_blocks = comment_block.find_all("a")
-
-        user_links = []
-        issue_links = []
-        media_links = []
-        other_internal_links = []
-        other_external_links = []
-        
-        links = {
-            "user": user_links,
-            "issue": issue_links,
-            "media": media_links,
-            "other-internal": other_internal_links,
-            "other-external": other_external_links,
-            "unknown": []
-        }
-        
-        [links[link_obj.type_].append(link_obj) for link_obj in [Link.parse(link) for link in link_blocks]]
+        content, replies, code_blocks, links = Comment.get_comment_details(comment_block)
 
         # return a comment object
         return Comment(timestamp = time, content = content, replies = replies, author = author,
-            user_links = user_links, issue_links = issue_links, media_links = media_links,
-            code_blocks = code_blocks, other_internal_links= other_external_links, other_external_links= other_external_links)
+            user_links = links["user"], issue_links = links["issue"], media_links = links["media"],
+            code_blocks = code_blocks, other_internal_links= links["other-internal"], other_external_links= links["other-external"])
 
 class PR:
     """

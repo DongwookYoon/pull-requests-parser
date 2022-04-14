@@ -91,7 +91,7 @@ comment:
 - ~~information about the total number of external links~~
 - identify where a reply within a reply comes from (not sure how to implement)
 - ~~examples of source code not detected~~
-- eliminate link from reply as opposed to original comment
+- ~~eliminate link from reply as opposed to original comment~~
 - ~~multiple quoted replies are integrated into one comment~~
 - not extracting the associated information when someone does a “review" (might be difficult)
 
