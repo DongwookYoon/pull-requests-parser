@@ -46,7 +46,7 @@ class Comment:
         links       list of links embedded in comment
     """
     def __init__(self, timestamp = 0, content = "", replies = "", user_links = [], issue_links = [],
-    media_links = [], code_blocks = [], other_internal_links = [], other_external_links = []):
+    media_links = [], code_blocks = [], other_internal_links = [], other_external_links = [], author = ""):
         self.timestamp = timestamp
         self.content = content
         self.replies = replies
@@ -62,6 +62,7 @@ class Comment:
         self.num_other_internal_links = len(other_internal_links)
         self.other_external_links = len(other_external_links)
         self.num_other_external_links = len(other_external_links)
+        self.author = author
 
     def get_comment_details(comment_block):
         """
@@ -90,11 +91,13 @@ class Comment:
         output: object containing parsed Comment information (timestamp, replies, content, links)
         """
         print("---- parsing comment")
+
         # find timestamp (default value is 0)
         relative_time_container = comment_container.find("relative-time")
         time = relative_time_container["datetime"] if relative_time_container else 0
 
         comment_block = comment_container.find(class_ = "comment-body")
+        author = comment_container.find(class_ = "author").text
         # find replies & content
         content, replies, code_blocks = Comment.get_comment_details(comment_block)
 
@@ -112,13 +115,14 @@ class Comment:
             "issue": issue_links,
             "media": media_links,
             "other-internal": other_internal_links,
-            "other-external": other_external_links
+            "other-external": other_external_links,
+            "unknown": []
         }
         
         [links[link_obj.type_].append(link_obj) for link_obj in [Link.parse(link) for link in link_blocks]]
 
         # return a comment object
-        return Comment(timestamp = time, content = content, replies = replies,
+        return Comment(timestamp = time, content = content, replies = replies, author = author,
             user_links = user_links, issue_links = issue_links, media_links = media_links,
             code_blocks = code_blocks, other_internal_links= other_external_links, other_external_links= other_external_links)
 
@@ -131,11 +135,12 @@ class PR:
         status      status of the PR, one of (unknown, closed, merged, open)
         comments    list of comments 
     """
-    def __init__(self, url, comments = [], status = "unknown"):
+    def __init__(self, url, comments = [], status = "unknown", num_commenters = 0):
         self.url = url
         self.comments = comments
         self.num_comments = len(comments)
         self.status = status
+        self.num_commenters = num_commenters
 
     # same as parse pr
     def parse(pr_json):
@@ -155,9 +160,10 @@ class PR:
         # find comments
         comment_containers = soup.find_all(class_="timeline-comment")
         comments = [Comment.parse(comment) for comment in comment_containers]
+        authors = {comment.author for comment in comments}
 
         # return a PR pbject
-        return PR(html, comments, status)
+        return PR(html, comments, status, len(authors))
 
     def filter_likely_ui_discussions(prs_json):
         """

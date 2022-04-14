@@ -73,7 +73,7 @@ The accuracy of these changes are not verified in details, but the current outpu
 - refactored many methods of `repo_parser.py` into class static methods for better organization 
 - created new `api_requests.py` fpr abstracting all API calls
 
-## 4/5 update
+## 4/5, 4/14 update
 ### to be completed (from Cleidson's feedbacks)
 repo:
 - ~~add project URL information~~
@@ -82,14 +82,14 @@ repo:
 
 pr:
 - ~~total number of comments extracted~~
-- total number of different people involved in the PR
+- ~~total number of different people involved in the PR~~
 
 comment:
-- information of author on comment (name)
+- ~~information of author on comment (name)~~
 - ~~total number of @ mentions~~ (same as num_user_links)
 - ~~separate the different types of links~~
 - ~~information about the total number of external links~~
-- identify where a reply within a reply comes from (might be difficult)
+- identify where a reply within a reply comes from (not sure how to implement)
 - ~~examples of source code not detected~~
 - eliminate link from reply as opposed to original comment
 - ~~multiple quoted replies are integrated into one comment~~
