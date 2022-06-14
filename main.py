@@ -1,10 +1,7 @@
 from github import Github
-import traceback
-import datetime
 import re
 import sys
 import json
-import networkx as nx
 
 def get_token():
     # get personal access token
@@ -62,6 +59,7 @@ def fetch_data(target_organization):
 
     for repo in repo_collection:
         HIGHEST_ISSUE_NUMBER = get_highest_issue_number(repo)
+        print(f'Crawling repo {repo.url} (about {HIGHEST_ISSUE_NUMBER} nodes)...')
         for issue_number in range(1, HIGHEST_ISSUE_NUMBER + 1):
             # go through every possible issue/PR number
             try:
